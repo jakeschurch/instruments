@@ -19,3 +19,54 @@
 // SOFTWARE.
 
 package instruments
+
+import (
+	"errors"
+	"time"
+)
+
+var (
+	ErrZeroValue = errors.New("zero value found")
+	ErrNilValue  = errors.New("nil value found")
+)
+
+// ----------------------------------------------------------------------------
+
+// Quote reflects a static state of a security.
+type Quote struct {
+	Name      string
+	Bid, Ask  *quotedMetric
+	Timestamp time.Time
+}
+
+// TotalAsk returns a Amount representation of the total Ask amount of a quote.
+func (q *Quote) TotalAsk() (Amount, error) {
+	if q.Ask == nil {
+		return 0, ErrNilValue
+	}
+	return q.Ask.Total()
+}
+
+// TotalBid returns a Amount representation of the total Bid amount of a quote.
+func (q *Quote) TotalBid() (Amount, error) {
+	if q.Bid == nil {
+		return 0, ErrNilValue
+	}
+	return q.Bid.Total()
+}
+
+// ----------------------------------------------------------------------------
+
+// A quotedMetric is a representation of a Price with an associated Volume..
+type quotedMetric struct {
+	Price
+	Volume
+}
+
+// Total returns the product of a Price and a Volume.
+func (q *quotedMetric) Total() (a Amount, err error) {
+	if a = Amount(q.Price * Price(q.Volume)); a == 0 {
+		return 0, ErrZeroValue
+	}
+	return a, err
+}
