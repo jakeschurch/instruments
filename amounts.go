@@ -1,5 +1,3 @@
-// MIT License
-//
 // Copyright (c) 2017 Jake Schurch
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,3 +19,70 @@
 // SOFTWARE.
 
 package instruments
+
+import (
+	"strconv"
+)
+
+// ----------------------------------------------------------------------------
+
+// Amount is the representation of a Volume and an Amount.
+type Amount int
+
+// Volume represents a quantity or volume.
+type Volume int
+
+// Price is an integer representation of a decimal price amount.
+type Price int
+
+// NewVolume instantiates a volume struct from a float.
+func NewVolume(f float64) Volume {
+	return Volume(f)
+}
+
+// String returns a string representation of volume.
+func (v Volume) String() string {
+	var amt, end []byte
+	amt = []byte(strconv.Itoa(int(v)))
+	amt, end = amt[0:len(amt)-2], amt[len(amt)-2:]
+
+	return toString(amt) + "." + string(end)
+}
+
+// ----------------------------------------------------------------------------
+
+// NewPrice instantiates a price struct from a float.
+func NewPrice(f float64) Price {
+	return Price(f * 100)
+}
+
+// String returns a string representation of a price value.
+func (p Price) String() string {
+	var amt, end []byte
+	amt = []byte(strconv.Itoa(int(p)))
+	amt, end = amt[0:len(amt)-2], amt[len(amt)-2:]
+
+	return "$" + toString(amt) + "." + string(end)
+}
+
+// ----------------------------------------------------------------------------
+
+// Divide returns the product of two price values.
+func Divide(top, bottom Price) Amount {
+	return Amount((top*200 + bottom) / (bottom * 2))
+}
+
+// toString takes a byte slice and converts it to a string representation.
+func toString(amt []byte) string {
+	var result []byte
+	nextComma := 3
+	for i := 0; len(amt)-1 >= 0; i++ {
+		if i == nextComma {
+			result = append([]byte{','}, result...)
+			nextComma += 3
+		}
+		result = append(amt[len(amt)-1:], result...)
+		amt = amt[0 : len(amt)-1]
+	}
+	return string(result)
+}
