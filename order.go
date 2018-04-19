@@ -19,3 +19,32 @@
 // SOFTWARE.
 
 package instruments
+
+// Order stores logic for transacting a stock.
+type Order struct {
+	Name string
+	*quotedMetric
+	Buy    bool
+	Status Status
+	Logic  Logic
+}
+
+// Status variables refer to a status of an order's execution.
+type Status int
+
+const (
+	// Open indicates that an order has not been transacted.
+	Open Status = iota // 0
+	// Closed indicates that an order has been transacted.
+	Closed
+	// Cancelled indicates than an order was closed, but order was not transacted.
+	Cancelled
+)
+
+// Logic is used to identify when the order should be executed.
+type Logic int
+
+const (
+	Market Logic = iota // 0
+	Limit
+)
