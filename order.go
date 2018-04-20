@@ -20,13 +20,45 @@
 
 package instruments
 
+import (
+	"time"
+
+	"github.com/jakeschurch/instruments/internal/timing"
+)
+
 // Order stores logic for transacting a stock.
 type Order struct {
 	Name string
-	*quotedMetric
-	Buy    bool
-	Status Status
-	Logic  Logic
+	quotedMetric
+	filled Volume
+
+	Buy       bool
+	Status    Status
+	Logic     Logic
+	timestamp time.Time
+	ticker    *timing.OrderTicker
+}
+
+func (o *Order) timestampTx() time.Time {
+	return o.timestamp.Add(o.ticker.Duration())
+}
+
+func (o *Order) Transact(p Price, v Volume) *Transaction {
+	var tx *Transaction = &Transaction{
+		Name:         o.Name,
+		Buy:          o.Buy,
+		quotedMetric: quotedMetric{o.Price, o.Volume},
+		Timestamp:    o.timestampTx(),
+	}
+	o.filled -= v
+	return tx
+}
+
+type Transaction struct {
+	Name string
+	Buy  bool
+	quotedMetric
+	Timestamp time.Time
 }
 
 // Status variables refer to a status of an order's execution.
