@@ -23,7 +23,7 @@ package instruments
 import (
 	"time"
 
-	"github.com/jakeschurch/instruments/internal/timing"
+	"github.com/jakeschurch/instruments/internal/ordering"
 )
 
 // Order stores logic for transacting a stock.
@@ -36,24 +36,42 @@ type Order struct {
 	Status    Status
 	Logic     Logic
 	timestamp time.Time
-	ticker    *timing.OrderTicker
+	ticker    *ordering.OrderTicker
+}
+
+// newOrder instantiates a new order struct.
+func newOrder(name string, buy bool, logic Logic, price Price, volume Volume, timestamp time.Time) *Order {
+	return &Order{
+		Name:         name,
+		Buy:          buy,
+		quotedMetric: quotedMetric{Price: price, Volume: volume},
+		Logic:        logic,
+		Status:       Open,
+		timestamp:    timestamp,
+
+		ticker: ordering.NewOrderTicker(),
+		filled: 0,
+	}
 }
 
 func (o *Order) timestampTx() time.Time {
 	return o.timestamp.Add(o.ticker.Duration())
 }
 
-func (o *Order) Transact(p Price, v Volume) *Transaction {
-	var tx *Transaction = &Transaction{
+// Transact a fulfillment of an order; yielding a new transaction struct.
+func (o *Order) Transact(price Price, volume Volume) *Transaction {
+	o.filled -= volume
+	return &Transaction{
 		Name:         o.Name,
 		Buy:          o.Buy,
-		quotedMetric: quotedMetric{o.Price, o.Volume},
+		quotedMetric: quotedMetric{price, volume},
 		Timestamp:    o.timestampTx(),
 	}
-	o.filled -= v
-	return tx
 }
 
+// ----------------------------------------------------------------------------
+
+// Transaction represents a fulfillment of a financial order.
 type Transaction struct {
 	Name string
 	Buy  bool
