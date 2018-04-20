@@ -112,3 +112,40 @@ func TestNewVolume(t *testing.T) {
 		})
 	}
 }
+
+func TestVolume_String(t *testing.T) {
+	tests := []struct {
+		name string
+		v    Volume
+		want string
+	}{
+		{"base case", NewVolume(10), "10.00"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.v.String(); got != tt.want {
+				t.Errorf("Volume.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_toString(t *testing.T) {
+	type args struct {
+		amt []byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := toString(tt.args.amt); got != tt.want {
+				t.Errorf("toString() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

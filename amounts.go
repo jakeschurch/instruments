@@ -42,11 +42,10 @@ func NewVolume(f float64) Volume {
 
 // String returns a string representation of volume.
 func (v Volume) String() string {
-	var amt, end []byte
-	amt = []byte(strconv.Itoa(int(v)))
-	amt, end = amt[0:len(amt)-2], amt[len(amt)-2:]
+	var amt []byte = []byte(strconv.Itoa(int(v)))
+	// amt, end = amt[0:len(amt)-2], amt[len(amt)-2:]
 
-	return toString(amt) + "." + string(end)
+	return toString(amt) + ".00"
 }
 
 // ----------------------------------------------------------------------------
