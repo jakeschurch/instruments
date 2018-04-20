@@ -92,32 +92,6 @@ func TestQuote_TotalBid(t *testing.T) {
 	}
 }
 
-func TestQuote_FillOrder(t *testing.T) {
-	q := mockQuote()
-	wanted := newOrder("AAPL", true, Market, NewPrice(10), 10, time.Time{})
-	type args struct {
-		price Price
-		vol   Volume
-		buy   bool
-		logic Logic
-	}
-	tests := []struct {
-		name string
-		q    *Quote
-		args args
-		want *Order
-	}{
-		{"base case", &q, args{10, 10, true, Market}, wanted},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.q.FillOrder(tt.args.price, tt.args.vol, tt.args.buy, tt.args.logic); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Quote.FillOrder() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func Test_quotedMetric_Total(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -136,6 +110,49 @@ func Test_quotedMetric_Total(t *testing.T) {
 			}
 			if !reflect.DeepEqual(gotA, tt.wantA) {
 				t.Errorf("quotedMetric.Total() = %v, want %v", gotA, tt.wantA)
+			}
+		})
+	}
+}
+
+func TestQuote_FillOrder(t *testing.T) {
+	type fields struct {
+		Name      string
+		Bid       *quotedMetric
+		Ask       *quotedMetric
+		Timestamp time.Time
+	}
+	type args struct {
+		price Price
+		vol   Volume
+		buy   bool
+		logic Logic
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   *Order
+	}{
+		{"base case",
+			fields{
+				Name:      "AAPL",
+				Bid:       &quotedMetric{NewPrice(10.00), NewVolume(10)},
+				Ask:       &quotedMetric{NewPrice(10.00), NewVolume(10)},
+				Timestamp: time.Time{}},
+			args{price: NewPrice(10.00), vol: NewVolume(10), buy: true, logic: Market},
+			newOrder("AAPL", true, Market, NewPrice(10.00), NewVolume(10), time.Time{})},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			q := &Quote{
+				Name:      tt.fields.Name,
+				Bid:       tt.fields.Bid,
+				Ask:       tt.fields.Ask,
+				Timestamp: tt.fields.Timestamp,
+			}
+			if got := q.FillOrder(tt.args.price, tt.args.vol, tt.args.buy, tt.args.logic); !(got.Volume == tt.want.Volume && got.Price == tt.want.Price && got.Name == tt.want.Name) {
+				t.Errorf("Quote.FillOrder() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -21,6 +21,7 @@
 package instruments
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jakeschurch/instruments/internal/ordering"
@@ -37,6 +38,10 @@ type Order struct {
 	Logic     Logic
 	timestamp time.Time
 	ticker    *ordering.OrderTicker
+}
+
+func (o *Order) String() string {
+	return fmt.Sprintf("\nName: %v\nPrice: %d\nVolume: %d\ntimestamp:%s", o.Name, o.Price, o.Volume, o.timestamp)
 }
 
 // newOrder instantiates a new order struct.
