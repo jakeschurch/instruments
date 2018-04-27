@@ -26,14 +26,8 @@ import (
 
 // ----------------------------------------------------------------------------
 
-// Amount is the representation of a Volume and an Amount.
-type Amount int
-
 // Volume represents a quantity or volume.
 type Volume int
-
-// Price is an integer representation of a decimal price amount.
-type Price int
 
 // NewVolume instantiates a volume struct from a float.
 func NewVolume(f float64) Volume {
@@ -50,6 +44,9 @@ func (v Volume) String() string {
 
 // ----------------------------------------------------------------------------
 
+// Price is an integer representation of a decimal price amount.
+type Price int
+
 // NewPrice instantiates a price struct from a float.
 func NewPrice(f float64) Price {
 	return Price(f * 100)
@@ -65,6 +62,9 @@ func (p Price) String() string {
 }
 
 // ----------------------------------------------------------------------------
+
+// Amount is the representation of an aggregate Amount & Volume product.
+type Amount int
 
 // Divide returns the product of two price values.
 func Divide(top, bottom Price) Amount {

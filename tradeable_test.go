@@ -20,6 +20,51 @@
 
 package instruments
 
-type Security struct {
-	Name string
+import (
+	"reflect"
+	"testing"
+	"time"
+)
+
+func mockTx(buy bool) Transaction {
+	return Transaction{
+		"Google",
+		buy,
+		quotedMetric{NewPrice(15.00), NewVolume(20.00)},
+		time.Time{},
+	}
+}
+func mockHolding() *Holding {
+	return &Holding{
+		Name: "Google", Volume: NewVolume(20.00),
+		Buy: txMetric{NewPrice(15.00), time.Time{}},
+	}
+}
+
+func TestBuy(t *testing.T) {
+
+	type args struct {
+		tx Transaction
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Holding
+		wantErr bool
+	}{
+		{"base case", args{mockTx(true)}, mockHolding(), false},
+		{"err case", args{mockTx(false)}, nil, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := Buy(tt.args.tx)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Buy() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Buy() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

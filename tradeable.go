@@ -19,3 +19,46 @@
 // SOFTWARE.
 
 package instruments
+
+import (
+	"time"
+
+	"github.com/pkg/errors"
+)
+
+var ErrInvalidTx = errors.New("invalid transaction type given")
+
+type Holding struct {
+	Name   string
+	Volume Volume
+	Buy    txMetric
+	Sell   txMetric
+}
+
+// Buy creates a new Holding from transaction data.
+func Buy(tx Transaction) (*Holding, error) {
+	if !tx.Buy {
+		return nil, errors.Wrap(ErrInvalidTx, "wanted buy, got sell")
+	}
+	return &Holding{
+		Name:   tx.Name,
+		Volume: tx.Volume,
+		Buy:    txMetric{Price: tx.Price, Date: tx.Timestamp},
+	}, nil
+}
+
+// SellOff a number of securities from transaction data.
+func (h *Holding) SellOff(tx Transaction) (*Holding, error) {
+	if tx.Buy || h.Volume < tx.Volume {
+		return nil, errors.Wrap(ErrInvalidTx, "wanted sell, got buy")
+	}
+	h.Volume -= tx.Volume
+	return h, nil
+}
+
+// ----------------------------------------------------------------------------
+
+type txMetric struct {
+	Price Price
+	Date  time.Time
+}
