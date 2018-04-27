@@ -68,3 +68,29 @@ func TestBuy(t *testing.T) {
 		})
 	}
 }
+
+func TestPrice_Avg(t *testing.T) {
+	var price = NewPrice(10.00)
+
+	type args struct {
+		n          uint
+		quotePrice Price
+	}
+	tests := []struct {
+		name string
+		p    *Price
+		args args
+		want Price
+	}{
+		{
+			"base case",
+			&price,
+			args{1, NewPrice(20.00)},
+			NewPrice(15.00)},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.p.Avg(tt.args.n, tt.args.quotePrice)
+		})
+	}
+}

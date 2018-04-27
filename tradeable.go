@@ -56,9 +56,63 @@ func (h *Holding) SellOff(tx Transaction) (*Holding, error) {
 	return h, nil
 }
 
-// ----------------------------------------------------------------------------
-
 type txMetric struct {
 	Price Price
 	Date  time.Time
+}
+
+// ----------------------------------------------------------------------------
+
+type DatedMetric struct {
+}
+
+// ----------------------------------------------------------------------------
+
+type Summary struct {
+	n              uint
+	Volume         Volume
+	AvgBid, AvgAsk *Price
+
+	MaxBid, MaxAsk *summaryMetric
+	MinBid, MinAsk *summaryMetric
+}
+
+func (s *Summary) UpdateMetrics(qBid, qAsk Price, t time.Time) {
+	s.AvgBid.Avg(s.n, qBid)
+	s.AvgAsk.Avg(s.n, qAsk)
+	s.n++
+
+	s.MaxAsk.Max(qAsk, t)
+	s.MaxBid.Max(qBid, t)
+	s.MinBid.Min(qBid, t)
+	s.MinAsk.Min(qAsk, t)
+}
+
+// ----------------------------------------------------------------------------
+
+type summaryMetric struct {
+	Price Price
+	Date  time.Time
+}
+
+func (p *Price) Avg(n uint, quotePrice Price) Price {
+	numerator := *p*Price(n) + quotePrice
+	newAvg := numerator / (Price(n) + 1)
+	p = &newAvg
+
+	return newAvg
+}
+
+func (s *summaryMetric) Max(quotePrice Price, timestamp time.Time) Price {
+	if s.Price <= quotePrice {
+		s.Price = quotePrice
+	}
+	return s.Price
+}
+
+func (s *summaryMetric) Min(quotePrice Price, timestamp time.Time) Price {
+	if s.Price >= quotePrice {
+		s.Price = quotePrice
+	}
+	return s.Price
 }
