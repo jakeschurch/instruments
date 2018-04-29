@@ -74,6 +74,16 @@ type Summary struct {
 	MinBid, MinAsk *SummaryMetric
 }
 
+// NewSummary returns a new summary instance.
+// Summary is constructed from fields supplied by a Holding instance.
+func NewSummary(h Holding) *Summary {
+	metric := &SummaryMetric{Price: h.Buy.Price, Date: h.Buy.Date}
+	return &Summary{
+		N: 0, Volume: h.Volume, AvgBid: &h.Buy.Price, AvgAsk: &h.Buy.Price,
+		MaxBid: metric, MaxAsk: metric, MinBid: metric, MinAsk: metric,
+	}
+}
+
 func (s *Summary) UpdateMetrics(qBid, qAsk Price, t time.Time) {
 	if qBid == 0 || qAsk == 0 {
 		return
