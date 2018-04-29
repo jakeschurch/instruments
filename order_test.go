@@ -21,6 +21,8 @@
 package instruments
 
 import (
+	"fmt"
+	"reflect"
 	"testing"
 	"time"
 
@@ -63,6 +65,66 @@ func TestOrder_Transact(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.o.Transact(tt.args.price, tt.args.volume); !testTx(got) {
 				t.Errorf("Order.Transact() = %v", got)
+			}
+		})
+	}
+}
+
+func TestOrder_String(t *testing.T) {
+	var o = mockOrder()
+	tests := []struct {
+		name string
+		o    *Order
+		want string
+	}{
+		{"base case", o, fmt.Sprintf("\nName: %v\nPrice: %d\nVolume: %d\ntimestamp:%s", o.Name, o.Price, o.Volume, o.timestamp)},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.o.String(); got != tt.want {
+				t.Errorf("Order.String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_newOrder(t *testing.T) {
+	type args struct {
+		name      string
+		buy       bool
+		logic     Logic
+		price     Price
+		volume    Volume
+		timestamp time.Time
+	}
+	tests := []struct {
+		name string
+		args args
+		want *Order
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := newOrder(tt.args.name, tt.args.buy, tt.args.logic, tt.args.price, tt.args.volume, tt.args.timestamp); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("newOrder() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestOrder_timestampTx(t *testing.T) {
+	tests := []struct {
+		name string
+		o    *Order
+		want time.Time
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.o.timestampTx(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Order.timestampTx() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -34,6 +34,15 @@ func mockTx(buy bool) Transaction {
 		time.Time{},
 	}
 }
+func mockSellTx() Transaction {
+	return Transaction{
+		"Google",
+		false,
+		quotedMetric{NewPrice(15.00), NewVolume(10.00)},
+		time.Time{},
+	}
+}
+
 func mockHolding() *Holding {
 	return &Holding{
 		Name: "Google", Volume: NewVolume(20.00),
@@ -91,6 +100,118 @@ func TestPrice_Avg(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.p.Avg(tt.args.n, tt.args.quotePrice)
+		})
+	}
+}
+
+func TestHolding_SellOff(t *testing.T) {
+	wantedHolding := mockHolding()
+	wantedHolding.Volume = NewVolume(10.00)
+
+	type args struct {
+		tx Transaction
+	}
+	tests := []struct {
+		name    string
+		h       *Holding
+		args    args
+		want    *Holding
+		wantErr bool
+	}{
+		{"base case", mockHolding(), args{mockSellTx()}, wantedHolding, false},
+		{"wrong Tx type", mockHolding(), args{mockTx(true)}, nil, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.h.SellOff(tt.args.tx)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Holding.SellOff() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Holding.SellOff() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func mockSummary() *Summary {
+	newPrice := NewPrice(10.00)
+	metric := &SummaryMetric{newPrice, time.Time{}}
+	return &Summary{
+		0, NewVolume(10.00), &newPrice, &newPrice,
+		metric, metric, metric, metric,
+	}
+}
+func TestSummary_UpdateMetrics(t *testing.T) {
+	type args struct {
+		qBid Price
+		qAsk Price
+		t    time.Time
+	}
+	tests := []struct {
+		name string
+		s    *Summary
+		args args
+	}{
+		{"Base case", mockSummary(), args{NewPrice(10.00), NewPrice(10.00), time.Time{}}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.s.UpdateMetrics(tt.args.qBid, tt.args.qAsk, tt.args.t)
+		})
+	}
+}
+
+func mockSummaryMetric() *SummaryMetric {
+	return &SummaryMetric{Price: NewPrice(10.00), Date: time.Time{}}
+}
+func TestSummaryMetric_Max(t *testing.T) {
+	summMetric := mockSummaryMetric()
+
+	type args struct {
+		quotePrice Price
+		timestamp  time.Time
+	}
+	tests := []struct {
+		name string
+		s    *SummaryMetric
+		args args
+		want Price
+	}{
+		{"no new max", summMetric, args{summMetric.Price - NewPrice(10.00), time.Time{}}, summMetric.Price},
+		{"new max", summMetric, args{summMetric.Price + NewPrice(5.00), time.Time{}}, summMetric.Price + NewPrice(5.00)},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.s.Max(tt.args.quotePrice, tt.args.timestamp); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("SummaryMetric.Max() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSummaryMetric_Min(t *testing.T) {
+	summMetric := mockSummaryMetric()
+
+	type args struct {
+		quotePrice Price
+		timestamp  time.Time
+	}
+	tests := []struct {
+		name string
+		s    *SummaryMetric
+		args args
+		want Price
+	}{
+		{"no new min", summMetric, args{summMetric.Price + NewPrice(2.00), time.Time{}}, summMetric.Price},
+		{"new min", summMetric, args{summMetric.Price - NewPrice(5.00), time.Time{}}, summMetric.Price - NewPrice(5.00)},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.s.Min(tt.args.quotePrice, tt.args.timestamp); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("SummaryMetric.Min() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }

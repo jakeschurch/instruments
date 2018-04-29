@@ -47,10 +47,15 @@ func TestQuote_TotalAsk(t *testing.T) {
 		wantErr bool
 	}{
 		{"base case", fields{q}, 100 * 100, false},
+		{"err case", fields{q}, 0, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			q := &tt.fields.q
+
+			if tt.name == "err case" {
+				q.Ask = nil
+			}
 
 			got, err := q.TotalAsk()
 			if (err != nil) != tt.wantErr {
@@ -75,10 +80,15 @@ func TestQuote_TotalBid(t *testing.T) {
 		wantErr bool
 	}{
 		{"base case", fields{mockQuote()}, 100 * 100, false},
+		{"err case", fields{mockQuote()}, 0, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			q := &tt.fields.q
+
+			if tt.name == "err case" {
+				q.Bid = nil
+			}
 
 			got, err := q.TotalBid()
 			if (err != nil) != tt.wantErr {
@@ -100,6 +110,7 @@ func Test_quotedMetric_Total(t *testing.T) {
 		wantErr bool
 	}{
 		{"base case", &quotedMetric{NewPrice(10), NewVolume(10)}, 100 * 100, false},
+		{"err case", &quotedMetric{NewPrice(0), NewVolume(10)}, 0, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
