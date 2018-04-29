@@ -66,6 +66,7 @@ type TxMetric struct {
 
 // Summary is a metric summary for a particular financial instrument.
 type Summary struct {
+	Name           string
 	N              uint
 	Volume         Volume
 	AvgBid, AvgAsk *Price
@@ -79,7 +80,7 @@ type Summary struct {
 func NewSummary(h Holding) *Summary {
 	metric := &SummaryMetric{Price: h.Buy.Price, Date: h.Buy.Date}
 	return &Summary{
-		N: 0, Volume: h.Volume, AvgBid: &h.Buy.Price, AvgAsk: &h.Buy.Price,
+		Name: h.Name, N: 0, Volume: h.Volume, AvgBid: &h.Buy.Price, AvgAsk: &h.Buy.Price,
 		MaxBid: metric, MaxAsk: metric, MinBid: metric, MinAsk: metric,
 	}
 }
