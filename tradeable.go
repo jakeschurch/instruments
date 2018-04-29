@@ -31,8 +31,8 @@ var ErrInvalidTx = errors.New("invalid transaction type given")
 type Holding struct {
 	Name   string
 	Volume Volume
-	Buy    txMetric
-	Sell   txMetric
+	Buy    TxMetric
+	Sell   TxMetric
 }
 
 // Buy creates a new Holding from transaction data.
@@ -43,7 +43,7 @@ func Buy(tx Transaction) (*Holding, error) {
 	return &Holding{
 		Name:   tx.Name,
 		Volume: tx.Volume,
-		Buy:    txMetric{Price: tx.Price, Date: tx.Timestamp},
+		Buy:    TxMetric{Price: tx.Price, Date: tx.Timestamp},
 	}, nil
 }
 
@@ -56,45 +56,49 @@ func (h *Holding) SellOff(tx Transaction) (*Holding, error) {
 	return h, nil
 }
 
-type txMetric struct {
+// TxMetric is an associated price-date metric pair.
+type TxMetric struct {
 	Price Price
 	Date  time.Time
 }
 
 // ----------------------------------------------------------------------------
 
-type DatedMetric struct {
-}
-
-// ----------------------------------------------------------------------------
-
+// Summary is a metric summary for a particular financial instrument.
 type Summary struct {
 	n              uint
 	Volume         Volume
 	AvgBid, AvgAsk *Price
 
-	MaxBid, MaxAsk *summaryMetric
-	MinBid, MinAsk *summaryMetric
+	MaxBid, MaxAsk *SummaryMetric
+	MinBid, MinAsk *SummaryMetric
 }
 
 func (s *Summary) UpdateMetrics(qBid, qAsk Price, t time.Time) {
+	if qBid == 0 || qAsk == 0 {
+		return
+	}
 	s.AvgBid.Avg(s.n, qBid)
 	s.AvgAsk.Avg(s.n, qAsk)
 	s.n++
 
 	s.MaxAsk.Max(qAsk, t)
+	s.MinAsk.Min(qAsk, t)
+
 	s.MaxBid.Max(qBid, t)
 	s.MinBid.Min(qBid, t)
-	s.MinAsk.Min(qAsk, t)
 }
 
 // ----------------------------------------------------------------------------
 
-type summaryMetric struct {
+// SummaryMetric records an associated price-date pair.
+type SummaryMetric struct {
 	Price Price
 	Date  time.Time
 }
 
+// Avg is calculated from an old price value,
+// the number of times the average has been calculated, and the new quote price.
 func (p *Price) Avg(n uint, quotePrice Price) Price {
 	numerator := *p*Price(n) + quotePrice
 	newAvg := numerator / (Price(n) + 1)
@@ -103,14 +107,16 @@ func (p *Price) Avg(n uint, quotePrice Price) Price {
 	return newAvg
 }
 
-func (s *summaryMetric) Max(quotePrice Price, timestamp time.Time) Price {
+// Max is calculated from a SummaryMetric's price field, and a new quoted price.
+func (s *SummaryMetric) Max(quotePrice Price, timestamp time.Time) Price {
 	if s.Price <= quotePrice {
 		s.Price = quotePrice
 	}
 	return s.Price
 }
 
-func (s *summaryMetric) Min(quotePrice Price, timestamp time.Time) Price {
+// Min is calculated from a SummaryMetric's price field, and a new quoted price.
+func (s *SummaryMetric) Min(quotePrice Price, timestamp time.Time) Price {
 	if s.Price >= quotePrice {
 		s.Price = quotePrice
 	}

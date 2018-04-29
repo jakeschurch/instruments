@@ -37,7 +37,7 @@ func mockTx(buy bool) Transaction {
 func mockHolding() *Holding {
 	return &Holding{
 		Name: "Google", Volume: NewVolume(20.00),
-		Buy: txMetric{NewPrice(15.00), time.Time{}},
+		Buy: TxMetric{NewPrice(15.00), time.Time{}},
 	}
 }
 
