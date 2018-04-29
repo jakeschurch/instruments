@@ -139,7 +139,7 @@ func mockSummary() *Summary {
 	newPrice := NewPrice(10.00)
 	metric := &SummaryMetric{newPrice, time.Time{}}
 	return &Summary{
-		0, NewVolume(10.00), &newPrice, &newPrice,
+		"GOOGL", 0, NewVolume(10.00), &newPrice, &newPrice,
 		metric, metric, metric, metric,
 	}
 }
