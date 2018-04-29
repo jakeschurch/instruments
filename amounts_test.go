@@ -139,16 +139,12 @@ func Test_toString(t *testing.T) {
 		args args
 		want string
 	}{
-		{
-			name: "base case",
-			args: args{[]byte("10000")},
-			want: "10,000",
-		},
+		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := toString(tt.args.amt); got != tt.want {
-				t.Errorf("toString() = '%v', want '%v'", got, tt.want)
+				t.Errorf("toString() = %v, want %v", got, tt.want)
 			}
 		})
 	}

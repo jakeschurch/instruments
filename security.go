@@ -19,3 +19,7 @@
 // SOFTWARE.
 
 package instruments
+
+type Security struct {
+	Name string
+}

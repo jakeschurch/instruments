@@ -66,7 +66,7 @@ type TxMetric struct {
 
 // Summary is a metric summary for a particular financial instrument.
 type Summary struct {
-	n              uint
+	N              uint
 	Volume         Volume
 	AvgBid, AvgAsk *Price
 
@@ -78,9 +78,9 @@ func (s *Summary) UpdateMetrics(qBid, qAsk Price, t time.Time) {
 	if qBid == 0 || qAsk == 0 {
 		return
 	}
-	s.AvgBid.Avg(s.n, qBid)
-	s.AvgAsk.Avg(s.n, qAsk)
-	s.n++
+	s.AvgBid.Avg(s.N, qBid)
+	s.AvgAsk.Avg(s.N, qAsk)
+	s.N++
 
 	s.MaxAsk.Max(qAsk, t)
 	s.MinAsk.Min(qAsk, t)
