@@ -155,6 +155,7 @@ func TestSummary_UpdateMetrics(t *testing.T) {
 		args args
 	}{
 		{"Base case", mockSummary(), args{NewPrice(10.00), NewPrice(10.00), time.Time{}}},
+		{"zero case", mockSummary(), args{NewPrice(0), NewPrice(10.00), time.Time{}}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
