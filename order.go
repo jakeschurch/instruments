@@ -44,8 +44,8 @@ func (o *Order) String() string {
 	return fmt.Sprintf("\nName: %v\nPrice: %d\nVolume: %d\ntimestamp:%s", o.Name, o.Price, o.Volume, o.timestamp)
 }
 
-// newOrder instantiates a new order struct.
-func newOrder(name string, buy bool, logic Logic, price Price, volume Volume, timestamp time.Time) *Order {
+// NewOrder instantiates a new order struct.
+func NewOrder(name string, buy bool, logic Logic, price Price, volume Volume, timestamp time.Time) *Order {
 	return &Order{
 		Name:         name,
 		Buy:          buy,

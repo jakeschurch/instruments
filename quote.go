@@ -39,8 +39,9 @@ type Quote struct {
 	Timestamp time.Time
 }
 
+// TEMP: come back and change vol to int or something idk
 func (q *Quote) FillOrder(price Price, vol Volume, buy bool, logic Logic) *Order {
-	return newOrder(q.Name, buy, logic, price, vol, q.Timestamp)
+	return NewOrder(q.Name, buy, logic, price, vol, q.Timestamp)
 }
 
 // TotalAsk returns a Amount representation of the total Ask amount of a quote.
