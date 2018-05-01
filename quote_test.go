@@ -152,7 +152,7 @@ func TestQuote_FillOrder(t *testing.T) {
 				Ask:       &quotedMetric{NewPrice(10.00), NewVolume(10)},
 				Timestamp: time.Time{}},
 			args{price: NewPrice(10.00), vol: NewVolume(10), buy: true, logic: Market},
-			newOrder("AAPL", true, Market, NewPrice(10.00), NewVolume(10), time.Time{})},
+			NewOrder("AAPL", true, Market, NewPrice(10.00), NewVolume(10), time.Time{})},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -88,7 +88,7 @@ func TestOrder_String(t *testing.T) {
 	}
 }
 
-func Test_newOrder(t *testing.T) {
+func Test_NewOrder(t *testing.T) {
 	type args struct {
 		name      string
 		buy       bool
@@ -106,7 +106,7 @@ func Test_newOrder(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := newOrder(tt.args.name, tt.args.buy, tt.args.logic, tt.args.price, tt.args.volume, tt.args.timestamp); !reflect.DeepEqual(got, tt.want) {
+			if got := NewOrder(tt.args.name, tt.args.buy, tt.args.logic, tt.args.price, tt.args.volume, tt.args.timestamp); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("newOrder() = %v, want %v", got, tt.want)
 			}
 		})
