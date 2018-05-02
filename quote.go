@@ -62,10 +62,14 @@ func (q *Quote) TotalBid() (Amount, error) {
 
 // ----------------------------------------------------------------------------
 
-// A quotedMetric is a representation of a Price with an associated Volume..
+// A quotedMetric is a representation of a Price with an associated Volume.
 type quotedMetric struct {
 	Price
 	Volume
+}
+
+func NewQuotedMetric(price, volume float64) *quotedMetric {
+	return &quotedMetric{Price: NewPrice(price), Volume: NewVolume(volume)}
 }
 
 // Total returns the product of a Price and a Volume.
