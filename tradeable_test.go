@@ -30,7 +30,7 @@ func mockTx(buy bool) Transaction {
 	return Transaction{
 		"Google",
 		buy,
-		quotedMetric{NewPrice(15.00), NewVolume(20.00)},
+		QuotedMetric{NewPrice(15.00), NewVolume(20.00)},
 		time.Time{},
 	}
 }
@@ -38,7 +38,7 @@ func mockSellTx() Transaction {
 	return Transaction{
 		"Google",
 		false,
-		quotedMetric{NewPrice(15.00), NewVolume(10.00)},
+		QuotedMetric{NewPrice(15.00), NewVolume(10.00)},
 		time.Time{},
 	}
 }
@@ -140,7 +140,7 @@ func mockSummary() *Summary {
 	metric := &SummaryMetric{newPrice, time.Time{}}
 	return &Summary{
 		"GOOGL", 0, NewVolume(10.00), &newPrice, &newPrice,
-		metric, metric, metric, metric,
+		metric, metric, metric, metric, metric, metric,
 	}
 }
 func TestSummary_UpdateMetrics(t *testing.T) {
@@ -212,6 +212,26 @@ func TestSummaryMetric_Min(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.s.Min(tt.args.quotePrice, tt.args.timestamp); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("SummaryMetric.Min() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewSummary(t *testing.T) {
+	type args struct {
+		h Holding
+	}
+	tests := []struct {
+		name string
+		args args
+		want *Summary
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewSummary(tt.args.h); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewSummary() = %v, want %v", got, tt.want)
 			}
 		})
 	}

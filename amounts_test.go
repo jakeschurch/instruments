@@ -149,3 +149,20 @@ func Test_toString(t *testing.T) {
 		})
 	}
 }
+
+func TestAmount_ToPercent(t *testing.T) {
+	tests := []struct {
+		name string
+		amt  Amount
+		want string
+	}{
+		{"base case", Amount(10 * 100), "10.00%"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.amt.ToPercent(); got != tt.want {
+				t.Errorf("Amount.ToPercent() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
