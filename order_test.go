@@ -33,7 +33,7 @@ func mockOrder() *Order {
 	return &Order{
 		Name:         "AAPL",
 		Buy:          true,
-		quotedMetric: quotedMetric{Price: NewPrice(10.00), Volume: NewVolume(10.00)},
+		QuotedMetric: QuotedMetric{Price: NewPrice(10.00), Volume: NewVolume(10.00)},
 		Logic:        Market,
 		Status:       Open,
 		timestamp:    time.Time{},
@@ -125,6 +125,31 @@ func TestOrder_timestampTx(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.o.timestampTx(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Order.timestampTx() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewOrder(t *testing.T) {
+	type args struct {
+		name      string
+		buy       bool
+		logic     Logic
+		price     Price
+		volume    Volume
+		timestamp time.Time
+	}
+	tests := []struct {
+		name string
+		args args
+		want *Order
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewOrder(tt.args.name, tt.args.buy, tt.args.logic, tt.args.price, tt.args.volume, tt.args.timestamp); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewOrder() = %v, want %v", got, tt.want)
 			}
 		})
 	}

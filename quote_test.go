@@ -29,8 +29,8 @@ import (
 func mockQuote() Quote {
 	return Quote{
 		Name:      "AAPL",
-		Bid:       &quotedMetric{NewPrice(10), NewVolume(10)},
-		Ask:       &quotedMetric{NewPrice(10), NewVolume(10)},
+		Bid:       &QuotedMetric{NewPrice(10), NewVolume(10)},
+		Ask:       &QuotedMetric{NewPrice(10), NewVolume(10)},
 		Timestamp: time.Time{}}
 }
 
@@ -105,12 +105,12 @@ func TestQuote_TotalBid(t *testing.T) {
 func Test_quotedMetric_Total(t *testing.T) {
 	tests := []struct {
 		name    string
-		q       *quotedMetric
+		q       *QuotedMetric
 		wantA   Amount
 		wantErr bool
 	}{
-		{"base case", &quotedMetric{NewPrice(10), NewVolume(10)}, 100 * 100, false},
-		{"err case", &quotedMetric{NewPrice(0), NewVolume(10)}, 0, true},
+		{"base case", &QuotedMetric{NewPrice(10), NewVolume(10)}, 100 * 100, false},
+		{"err case", &QuotedMetric{NewPrice(0), NewVolume(10)}, 0, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -129,8 +129,8 @@ func Test_quotedMetric_Total(t *testing.T) {
 func TestQuote_FillOrder(t *testing.T) {
 	type fields struct {
 		Name      string
-		Bid       *quotedMetric
-		Ask       *quotedMetric
+		Bid       *QuotedMetric
+		Ask       *QuotedMetric
 		Timestamp time.Time
 	}
 	type args struct {
@@ -148,8 +148,8 @@ func TestQuote_FillOrder(t *testing.T) {
 		{"base case",
 			fields{
 				Name:      "AAPL",
-				Bid:       &quotedMetric{NewPrice(10.00), NewVolume(10)},
-				Ask:       &quotedMetric{NewPrice(10.00), NewVolume(10)},
+				Bid:       &QuotedMetric{NewPrice(10.00), NewVolume(10)},
+				Ask:       &QuotedMetric{NewPrice(10.00), NewVolume(10)},
 				Timestamp: time.Time{}},
 			args{price: NewPrice(10.00), vol: NewVolume(10), buy: true, logic: Market},
 			NewOrder("AAPL", true, Market, NewPrice(10.00), NewVolume(10), time.Time{})},
@@ -164,6 +164,27 @@ func TestQuote_FillOrder(t *testing.T) {
 			}
 			if got := q.FillOrder(tt.args.price, tt.args.vol, tt.args.buy, tt.args.logic); !(got.Volume == tt.want.Volume && got.Price == tt.want.Price && got.Name == tt.want.Name) {
 				t.Errorf("Quote.FillOrder() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNewQuotedMetric(t *testing.T) {
+	type args struct {
+		price  float64
+		volume float64
+	}
+	tests := []struct {
+		name string
+		args args
+		want *QuotedMetric
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NewQuotedMetric(tt.args.price, tt.args.volume); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewQuotedMetric() = %v, want %v", got, tt.want)
 			}
 		})
 	}
