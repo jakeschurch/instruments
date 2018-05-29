@@ -29,8 +29,8 @@ import (
 func mockQuote() Quote {
 	return Quote{
 		Name:      "AAPL",
-		Bid:       &QuotedMetric{NewPrice(10), NewVolume(10)},
-		Ask:       &QuotedMetric{NewPrice(10), NewVolume(10)},
+		Bid:       QuotedMetric{NewPrice(10), NewVolume(10)},
+		Ask:       QuotedMetric{NewPrice(10), NewVolume(10)},
 		Timestamp: time.Time{}}
 }
 
@@ -54,7 +54,7 @@ func TestQuote_TotalAsk(t *testing.T) {
 			q := &tt.fields.q
 
 			if tt.name == "err case" {
-				q.Ask = nil
+				q.Ask.Price = 0
 			}
 
 			got, err := q.TotalAsk()
@@ -87,7 +87,7 @@ func TestQuote_TotalBid(t *testing.T) {
 			q := &tt.fields.q
 
 			if tt.name == "err case" {
-				q.Bid = nil
+				q.Bid.Price = 0
 			}
 
 			got, err := q.TotalBid()
@@ -129,8 +129,8 @@ func Test_quotedMetric_Total(t *testing.T) {
 func TestQuote_FillOrder(t *testing.T) {
 	type fields struct {
 		Name      string
-		Bid       *QuotedMetric
-		Ask       *QuotedMetric
+		Bid       QuotedMetric
+		Ask       QuotedMetric
 		Timestamp time.Time
 	}
 	type args struct {
@@ -148,8 +148,8 @@ func TestQuote_FillOrder(t *testing.T) {
 		{"base case",
 			fields{
 				Name:      "AAPL",
-				Bid:       &QuotedMetric{NewPrice(10.00), NewVolume(10)},
-				Ask:       &QuotedMetric{NewPrice(10.00), NewVolume(10)},
+				Bid:       QuotedMetric{NewPrice(10.00), NewVolume(10)},
+				Ask:       QuotedMetric{NewPrice(10.00), NewVolume(10)},
 				Timestamp: time.Time{}},
 			args{price: NewPrice(10.00), vol: NewVolume(10), buy: true, logic: Market},
 			NewOrder("AAPL", true, Market, NewPrice(10.00), NewVolume(10), time.Time{})},
@@ -172,12 +172,12 @@ func TestQuote_FillOrder(t *testing.T) {
 func TestNewQuotedMetric(t *testing.T) {
 	type args struct {
 		price  float64
-		volume float64
+		volume uint32
 	}
 	tests := []struct {
 		name string
 		args args
-		want *QuotedMetric
+		want QuotedMetric
 	}{
 		// TODO: Add test cases.
 	}

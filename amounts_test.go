@@ -95,7 +95,7 @@ func TestNewPrice(t *testing.T) {
 
 func TestNewVolume(t *testing.T) {
 	type args struct {
-		f float64
+		f uint32
 	}
 	tests := []struct {
 		name string

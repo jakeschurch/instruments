@@ -41,20 +41,19 @@ func (amt Amount) ToPercent() string {
 }
 
 // Volume represents a quantity or volume.
-type Volume int
+type Volume uint32
 
 // Price is an integer representation of a decimal price amount.
 type Price int
 
 // NewVolume instantiates a volume struct from a float.
-func NewVolume(f float64) Volume {
-	return Volume(f)
+func NewVolume(num uint32) Volume {
+	return Volume(num)
 }
 
 // String returns a string representation of volume.
 func (v Volume) String() string {
-	var amt []byte = []byte(strconv.Itoa(int(v)))
-	// amt, end = amt[0:len(amt)-2], amt[len(amt)-2:]
+	var amt = []byte(strconv.Itoa(int(v)))
 
 	return toString(amt) + ".00"
 }

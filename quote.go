@@ -35,18 +35,17 @@ var (
 // Quote reflects a static state of a security.
 type Quote struct {
 	Name      string
-	Bid, Ask  *QuotedMetric
+	Bid, Ask  QuotedMetric
 	Timestamp time.Time
 }
 
-// TEMP: come back and change vol to int or something idk
 func (q *Quote) FillOrder(price Price, vol Volume, buy bool, logic Logic) *Order {
 	return NewOrder(q.Name, buy, logic, price, vol, q.Timestamp)
 }
 
 // TotalAsk returns a Amount representation of the total Ask amount of a quote.
 func (q *Quote) TotalAsk() (Amount, error) {
-	if q.Ask == nil {
+	if q.Ask.Price == 0 || q.Ask.Volume == 0 {
 		return 0, ErrNilValue
 	}
 	return q.Ask.Total()
@@ -54,7 +53,7 @@ func (q *Quote) TotalAsk() (Amount, error) {
 
 // TotalBid returns a Amount representation of the total Bid amount of a quote.
 func (q *Quote) TotalBid() (Amount, error) {
-	if q.Bid == nil {
+	if q.Bid.Price == 0 || q.Bid.Volume == 0 {
 		return 0, ErrNilValue
 	}
 	return q.Bid.Total()
@@ -68,8 +67,8 @@ type QuotedMetric struct {
 	Volume
 }
 
-func NewQuotedMetric(price, volume float64) *QuotedMetric {
-	return &QuotedMetric{Price: NewPrice(price), Volume: NewVolume(volume)}
+func NewQuotedMetric(price float64, vol uint32) QuotedMetric {
+	return QuotedMetric{Price: NewPrice(price), Volume: Volume(vol)}
 }
 
 // Total returns the product of a Price and a Volume.
